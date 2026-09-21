@@ -8,7 +8,6 @@ on:
       - content/about.md
       - static/postfiat-project.json
       - static/benchmarks/live-testnet-validator-stats.json
-      - scripts/refresh_home_live.py
   workflow_dispatch:
 
 permissions:
@@ -27,5 +26,7 @@ jobs:
       - name: Self-test the renderers
         run: python3 scripts/refresh_home_live.py --self-test
 
+      # Only fact-file changes land here. A pull request that touches just the
+      # script would otherwise fail against the stale files on its own branch.
       - name: Fail if a published fact is behind the live snapshot
         run: python3 scripts/refresh_home_live.py --check

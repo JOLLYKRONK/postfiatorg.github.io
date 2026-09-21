@@ -1,0 +1,28 @@
+name: Live Facts Script Test
+
+on:
+  pull_request:
+    paths:
+      - scripts/refresh_home_live.py
+      - .github/workflows/live-facts-check.yml
+      - .github/workflows/live-facts-refresh.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-facts-script-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Offline on purpose. This gate is about the renderers, not about whether
+      # the committed numbers happen to be current, so it cannot go red from a
+      # validator count that moved.
+      - name: Self-test the renderers
+        run: python3 scripts/refresh_home_live.py --self-test
