@@ -1,0 +1,31 @@
+name: Live Facts Check
+
+on:
+  pull_request:
+    paths:
+      - static/llms.txt
+      - static/llms-full.txt
+      - content/about.md
+      - static/postfiat-project.json
+      - static/benchmarks/live-testnet-validator-stats.json
+      - scripts/refresh_home_live.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-facts-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Self-test the renderers
+        run: python3 scripts/refresh_home_live.py --self-test
+
+      - name: Fail if a published fact is behind the live snapshot
+        run: python3 scripts/refresh_home_live.py --check
